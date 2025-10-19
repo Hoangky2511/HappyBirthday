@@ -20,7 +20,6 @@
             font-family: 'Inter', sans-serif;
             margin: 0;
             overflow: hidden;
-            /* Nền gradient chuyển động */
             background: linear-gradient(-45deg, var(--pink), var(--purple), var(--blue));
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
@@ -42,10 +41,9 @@
             padding: 1rem;
         }
 
-        /* Dòng chữ Chúc Mừng Sinh Nhật */
         .title {
             font-family: 'Pacifico', cursive;
-            font-size: clamp(2.5rem, 10vw, 5rem); /* Tự co giãn theo màn hình */
+            font-size: clamp(2.5rem, 10vw, 5rem);
             color: white;
             text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
             opacity: 0;
@@ -60,19 +58,18 @@
             }
         }
 
-        /* Hộp quà Emoji */
         .gift-emoji {
             margin-top: 3rem;
             cursor: pointer;
-            font-size: clamp(6rem, 20vw, 9rem); /* Kích thước lớn hơn, tự co giãn */
+            font-size: clamp(6rem, 20vw, 9rem);
             opacity: 0;
             transform: scale(0.5);
             animation: popIn 1s ease-out 2s forwards, float 3s ease-in-out infinite 3s;
-            transition: transform 0.3s ease-in-out; /* Thêm transition cho hover */
+            transition: transform 0.3s ease-in-out;
         }
         .gift-emoji:hover {
-            transform: scale(1.1); /* To hơn khi hover */
-            animation-play-state: paused; /* Dừng hiệu ứng float khi di chuột vào */
+            transform: scale(1.1);
+            animation-play-state: paused;
         }
 
         .prompt-text {
@@ -83,7 +80,6 @@
             animation: fadeInUp 1.5s ease-out 2.5s forwards;
         }
 
-        /* Animation cho hộp quà */
         @keyframes popIn {
             to {
                 opacity: 1;
@@ -126,25 +122,57 @@
             position: absolute;
             top: 0.5rem;
             right: 1rem;
-            color: #4b5563; /* gray-600 */
+            color: #4b5563;
             font-size: 2rem;
             font-weight: bold;
             cursor: pointer;
+            z-index: 10;
         }
         .close-button:hover {
-            color: #ef4444; /* red-500 */
+            color: #ef4444;
         }
         .modal-image {
             border-radius: 6px;
             width: 100%;
-            max-height: 80vh;
+            max-height: 75vh;
             object-fit: contain;
         }
         .modal-text {
             text-align: center;
-            color: #374151; /* gray-700 */
+            color: #374151;
             margin-top: 0.75rem;
             font-weight: 600;
+        }
+
+        /* --- CSS MỚI CHO NÚT CHUYỂN ẢNH --- */
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(255, 255, 255, 0.7);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .nav-button:hover {
+            background-color: white;
+            transform: translateY(-50%) scale(1.1);
+        }
+        .nav-button.prev {
+            left: -50px; /* Đặt nút ra ngoài một chút */
+        }
+        .nav-button.next {
+            right: -50px; /* Đặt nút ra ngoài một chút */
         }
 
     </style>
@@ -165,18 +193,84 @@
         <div class="modal-content">
             <span id="closeButton" class="close-button">&times;</span>
             <img id="birthdayImage" src="" alt="Món quà bất ngờ" class="modal-image">
-            <p class="modal-text">Tadaaa Món quà đặc biệt dành cho bạn</p>
+            
+            <button id="prevButton" class="nav-button prev">&lt;</button>
+            <button id="nextButton" class="nav-button next">&gt;</button>
+            
+            <p id="imageCounter" class="modal-text"></p>
         </div>
     </div>
 
     <script>
+        // Lấy các phần tử HTML cần dùng
         const giftEmoji = document.getElementById('giftEmoji');
         const imageModal = document.getElementById('imageModal');
         const birthdayImage = document.getElementById('birthdayImage');
         const closeButton = document.getElementById('closeButton');
+        const prevButton = document.getElementById('prevButton');
+        const nextButton = document.getElementById('nextButton');
+        const imageCounter = document.getElementById('imageCounter');
 
-        // --- ĐÃ CẬP NHẬT LINK ẢNH CỦA BẠN ---
-        const imageUrl = "./gift.jpg";
+        // --- DANH SÁCH CÁC ẢNH CỦA BẠN ---
+        // Đảm bảo các file Anh1.jpg, Anh2.jpg, ... nằm cùng thư mục với file index.html
+        const images = ['Anh1.jpg', 'Anh2.jpg', 'Anh3.jpg', 'gift.jpg'];
+        let currentImageIndex = 0;
+
+        // Hàm để hiển thị ảnh dựa vào vị trí (index)
+        function showImage(index) {
+            // Cập nhật nguồn ảnh
+            birthdayImage.src = images[index];
+            // Cập nhật bộ đếm ảnh, ví dụ: "Ảnh 1 / 4"
+            imageCounter.textContent = `Ảnh ${index + 1} / ${images.length}`;
+
+            // Ẩn/hiện nút "Trước" và "Sau"
+            // Nếu là ảnh đầu tiên, ẩn nút "Trước"
+            prevButton.style.display = index === 0 ? 'none' : 'flex';
+            // Nếu là ảnh cuối cùng, ẩn nút "Sau"
+            nextButton.style.display = index === images.length - 1 ? 'none' : 'flex';
+        }
+
+        // Sự kiện khi bấm vào hộp quà emoji
+        giftEmoji.addEventListener('click', () => {
+            celebrate(); // Bắn pháo hoa
+            currentImageIndex = 0; // Luôn bắt đầu từ ảnh đầu tiên
+            showImage(currentImageIndex); // Hiển thị ảnh đầu tiên
+            
+            imageModal.style.display = 'flex';
+            setTimeout(() => imageModal.classList.add('show'), 10);
+        });
+
+        // Sự kiện cho nút "Sau" (Next)
+        nextButton.addEventListener('click', () => {
+            if (currentImageIndex < images.length - 1) {
+                currentImageIndex++;
+                showImage(currentImageIndex);
+            }
+        });
+
+        // Sự kiện cho nút "Trước" (Previous)
+        prevButton.addEventListener('click', () => {
+            if (currentImageIndex > 0) {
+                currentImageIndex--;
+                showImage(currentImageIndex);
+            }
+        });
+
+        // Hàm đóng modal
+        const closeModal = () => {
+            imageModal.classList.remove('show');
+            setTimeout(() => {
+                imageModal.style.display = 'none';
+            }, 300);
+        };
+
+        // Gán sự kiện cho nút đóng và click ra ngoài
+        closeButton.addEventListener('click', closeModal);
+        imageModal.addEventListener('click', (event) => {
+            if (event.target === imageModal) {
+                closeModal();
+            }
+        });
 
         // Hàm bắn pháo giấy (không thay đổi)
         function celebrate() {
@@ -197,31 +291,6 @@
                 confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
             }, 250);
         }
-
-        // Sự kiện khi bấm vào hộp quà emoji
-        giftEmoji.addEventListener('click', () => {
-            celebrate();
-            birthdayImage.src = imageUrl;
-            imageModal.style.display = 'flex';
-            setTimeout(() => imageModal.classList.add('show'), 10); 
-        });
-
-        // Hàm đóng modal (không thay đổi)
-        const closeModal = () => {
-            imageModal.classList.remove('show');
-            setTimeout(() => {
-                imageModal.style.display = 'none';
-            }, 300); 
-        };
-
-        // Gán sự kiện cho nút đóng và click ra ngoài (không thay đổi)
-        closeButton.addEventListener('click', closeModal);
-        imageModal.addEventListener('click', (event) => {
-            if (event.target === imageModal) {
-                closeModal();
-            }
-        });
     </script>
 </body>
 </html>
-
