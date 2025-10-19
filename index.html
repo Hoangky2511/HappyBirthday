@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chúc Mừng Sinh Nhật 🎉</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <style>
+        /* --- CSS Tối Ưu & Trang Trí --- */
+        :root {
+            --pink: #fecaca;
+            --purple: #d8b4fe;
+            --blue: #a5b4fc;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            /* Nền gradient chuyển động */
+            background: linear-gradient(-45deg, var(--pink), var(--purple), var(--blue));
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        /* Dòng chữ Chúc Mừng Sinh Nhật */
+        .title {
+            font-family: 'Pacifico', cursive;
+            font-size: clamp(2.5rem, 10vw, 5rem); /* Tự co giãn theo màn hình */
+            color: white;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1.5s ease-out 0.5s forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Hộp quà Emoji */
+        .gift-emoji {
+            margin-top: 3rem;
+            cursor: pointer;
+            font-size: clamp(6rem, 20vw, 9rem); /* Kích thước lớn hơn, tự co giãn */
+            opacity: 0;
+            transform: scale(0.5);
+            animation: popIn 1s ease-out 2s forwards, float 3s ease-in-out infinite 3s;
+            transition: transform 0.3s ease-in-out; /* Thêm transition cho hover */
+        }
+        .gift-emoji:hover {
+            transform: scale(1.1); /* To hơn khi hover */
+            animation-play-state: paused; /* Dừng hiệu ứng float khi di chuột vào */
+        }
+
+        .prompt-text {
+            color: white;
+            margin-top: 1rem;
+            font-size: 1.125rem;
+            opacity: 0;
+            animation: fadeInUp 1.5s ease-out 2.5s forwards;
+        }
+
+        /* Animation cho hộp quà */
+        @keyframes popIn {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* --- Modal chứa ảnh --- */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.75);
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            transform: scale(0.95);
+            opacity: 0;
+            transition: all 0.3s ease-out;
+        }
+        .modal.show .modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+        .close-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 1rem;
+            color: #4b5563; /* gray-600 */
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-button:hover {
+            color: #ef4444; /* red-500 */
+        }
+        .modal-image {
+            border-radius: 6px;
+            width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+        }
+        .modal-text {
+            text-align: center;
+            color: #374151; /* gray-700 */
+            margin-top: 0.75rem;
+            font-weight: 600;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 class="title">Chúc Mừng Sinh Nhật</h1>
+        
+        <div id="giftEmoji" class="gift-emoji">
+            🎁
+        </div>
+        
+        <p class="prompt-text">Bấm vào hộp quà nhé</p>
+    </div>
+
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <span id="closeButton" class="close-button">&times;</span>
+            <img id="birthdayImage" src="" alt="Món quà bất ngờ" class="modal-image">
+            <p class="modal-text">Tadaaa Món quà đặc biệt dành cho bạn</p>
+        </div>
+    </div>
+
+    <script>
+        const giftEmoji = document.getElementById('giftEmoji');
+        const imageModal = document.getElementById('imageModal');
+        const birthdayImage = document.getElementById('birthdayImage');
+        const closeButton = document.getElementById('closeButton');
+
+        // --- ĐÃ CẬP NHẬT LINK ẢNH CỦA BẠN ---
+        const imageUrl = "./gift.jpg";
+
+        // Hàm bắn pháo giấy (không thay đổi)
+        function celebrate() {
+            const duration = 5 * 1000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            const interval = setInterval(function() {
+                const timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) return clearInterval(interval);
+
+                const particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+
+        // Sự kiện khi bấm vào hộp quà emoji
+        giftEmoji.addEventListener('click', () => {
+            celebrate();
+            birthdayImage.src = imageUrl;
+            imageModal.style.display = 'flex';
+            setTimeout(() => imageModal.classList.add('show'), 10); 
+        });
+
+        // Hàm đóng modal (không thay đổi)
+        const closeModal = () => {
+            imageModal.classList.remove('show');
+            setTimeout(() => {
+                imageModal.style.display = 'none';
+            }, 300); 
+        };
+
+        // Gán sự kiện cho nút đóng và click ra ngoài (không thay đổi)
+        closeButton.addEventListener('click', closeModal);
+        imageModal.addEventListener('click', (event) => {
+            if (event.target === imageModal) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
+
