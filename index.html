@@ -144,7 +144,7 @@
             font-weight: 600;
         }
 
-        /* --- CSS MỚI CHO NÚT CHUYỂN ẢNH --- */
+        /* --- CSS CHO NÚT CHUYỂN ẢNH --- */
         .nav-button {
             position: absolute;
             top: 50%;
@@ -169,10 +169,10 @@
             transform: translateY(-50%) scale(1.1);
         }
         .nav-button.prev {
-            left: -50px; /* Đặt nút ra ngoài một chút */
+            left: -50px;
         }
         .nav-button.next {
-            right: -50px; /* Đặt nút ra ngoài một chút */
+            right: -50px;
         }
 
     </style>
@@ -212,29 +212,33 @@
         const imageCounter = document.getElementById('imageCounter');
 
         // --- DANH SÁCH CÁC ẢNH CỦA BẠN ---
-        // Đảm bảo các file Anh1.jpg, Anh2.jpg, ... nằm cùng thư mục với file index.html
         const images = ['Anh1.jpg', 'Anh2.jpg', 'Anh3.jpg', 'gift.jpg'];
         let currentImageIndex = 0;
 
         // Hàm để hiển thị ảnh dựa vào vị trí (index)
         function showImage(index) {
-            // Cập nhật nguồn ảnh
             birthdayImage.src = images[index];
-            // Cập nhật bộ đếm ảnh, ví dụ: "Ảnh 1 / 4"
-            imageCounter.textContent = `Ảnh ${index + 1} / ${images.length}`;
+            
+            // --- THAY ĐỔI THEO YÊU CẦU ---
+            // Nếu là ảnh đầu tiên, hiển thị lời nhắn đặc biệt
+            if (index === 0) {
+                imageCounter.textContent = 'Tada đây là quà dành cho bạn';
+            } 
+            // Với các ảnh còn lại, hiển thị bộ đếm
+            else {
+                imageCounter.textContent = `Ảnh ${index + 1} / ${images.length}`;
+            }
 
             // Ẩn/hiện nút "Trước" và "Sau"
-            // Nếu là ảnh đầu tiên, ẩn nút "Trước"
             prevButton.style.display = index === 0 ? 'none' : 'flex';
-            // Nếu là ảnh cuối cùng, ẩn nút "Sau"
             nextButton.style.display = index === images.length - 1 ? 'none' : 'flex';
         }
 
         // Sự kiện khi bấm vào hộp quà emoji
         giftEmoji.addEventListener('click', () => {
-            celebrate(); // Bắn pháo hoa
-            currentImageIndex = 0; // Luôn bắt đầu từ ảnh đầu tiên
-            showImage(currentImageIndex); // Hiển thị ảnh đầu tiên
+            celebrate(); 
+            currentImageIndex = 0; 
+            showImage(currentImageIndex);
             
             imageModal.style.display = 'flex';
             setTimeout(() => imageModal.classList.add('show'), 10);
