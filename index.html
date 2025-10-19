@@ -202,7 +202,6 @@
     </div>
 
     <script>
-        // Lấy các phần tử HTML cần dùng
         const giftEmoji = document.getElementById('giftEmoji');
         const imageModal = document.getElementById('imageModal');
         const birthdayImage = document.getElementById('birthdayImage');
@@ -211,7 +210,6 @@
         const nextButton = document.getElementById('nextButton');
         const imageCounter = document.getElementById('imageCounter');
 
-        // --- DANH SÁCH CÁC ẢNH CỦA BẠN ---
         const images = ['Anh1.jpg', 'Anh2.jpg', 'Anh3.jpg', 'gift.jpg'];
         let currentImageIndex = 0;
 
@@ -219,14 +217,14 @@
         function showImage(index) {
             birthdayImage.src = images[index];
             
-            // --- THAY ĐỔI THEO YÊU CẦU ---
-            // Nếu là ảnh đầu tiên, hiển thị lời nhắn đặc biệt
-            if (index === 0) {
-                imageCounter.textContent = 'Tada đây là quà dành cho bạn';
+            // --- THAY ĐỔI THEO YÊU CẦU MỚI NHẤT ---
+            // Nếu là ảnh cuối cùng (index bằng tổng số ảnh - 1)
+            if (index === images.length - 1) {
+                imageCounter.textContent = 'Bất ngờ chưa';
             } 
-            // Với các ảnh còn lại, hiển thị bộ đếm
+            // Ngược lại, với các ảnh còn lại
             else {
-                imageCounter.textContent = `Ảnh ${index + 1} / ${images.length}`;
+                imageCounter.textContent = 'Tada đây là quà dành cho bạn';
             }
 
             // Ẩn/hiện nút "Trước" và "Sau"
@@ -298,4 +296,3 @@
     </script>
 </body>
 </html>
-
