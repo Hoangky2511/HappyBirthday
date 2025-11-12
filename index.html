@@ -163,16 +163,17 @@
             justify-content: center;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             transition: background-color 0.2s, transform 0.2s;
+            z-index: 5; /* Thêm z-index để chắc chắn nó nổi lên trên */
         }
         .nav-button:hover {
             background-color: white;
             transform: translateY(-50%) scale(1.1);
         }
         .nav-button.prev {
-            left: -50px;
+            left: 0.5rem; /* <-- ĐÃ SỬA: Đưa nút vào trong 0.5rem (hoặc 10px) */
         }
         .nav-button.next {
-            right: -50px;
+            right: 0.5rem; /* <-- ĐÃ SỬA: Đưa nút vào trong 0.5rem (hoặc 10px) */
         }
 
     </style>
@@ -296,6 +297,3 @@
     </script>
 </body>
 </html>
-
-
-
